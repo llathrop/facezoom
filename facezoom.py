@@ -29,17 +29,18 @@ while True:
     orig=frame.copy()
 
     gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-
-    faces = faceCascade.detectMultiScale(
-        gray,
-        scaleFactor=1.1,
-        minNeighbors=5,
-        minSize=(30, 30),
-    # flags=cv2.cv.CV_HAAR_SCALE_IMAGE
-    )
+    
+    if cycle_counter%30==0:
+        faces = faceCascade.detectMultiScale(
+            gray,
+            scaleFactor=1.1,
+            minNeighbors=5,
+            minSize=(30, 30),
+        # flags=cv2.cv.CV_HAAR_SCALE_IMAGE
+        )
     # Draw a rectangle around the faces
     for (x, y, w, h) in faces:
-        #cv2.rectangle(frame, (x, y), (x+w, y+h), (0, 255, 0), 2)
+        cv2.rectangle(frame, (x, y), (x+w, y+h), (0, 255, 0), 2)
         pass
         #zoom image to rect
     if  len(faces)>=1 and w<=width and h <height:
