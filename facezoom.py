@@ -7,9 +7,13 @@ frame_saver=[]
 cascPath = sys.argv[1]
 faceCascade = cv2.CascadeClassifier(cascPath)
 
-video_capture = cv2.VideoCapture(0)
-video_capture.set(3, 1280); 
-video_capture.set(4, 1024); 
+try:
+    video_capture = cv2.VideoCapture(0)
+    video_capture.set(3, 1280); 
+    video_capture.set(4, 1024); 
+except:
+    print("couldn't get the camera")
+    exit()
 
 ret, frame = video_capture.read()
 height,width = frame.shape[:2]
@@ -25,7 +29,11 @@ cycle_counter=cycle_counter_length
 
 while True:
     # Capture frame-by-frame
-    ret, frame = video_capture.read()
+    try:
+        ret, frame = video_capture.read()
+    except:
+        print("couldn't get the camera")
+        break # still need to save any captured frames
     orig=frame.copy()
 
     gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
@@ -40,7 +48,7 @@ while True:
         )
     # Draw a rectangle around the faces
     for (x, y, w, h) in faces:
-        cv2.rectangle(frame, (x, y), (x+w, y+h), (0, 255, 0), 2)
+        #cv2.rectangle(frame, (x, y), (x+w, y+h), (0, 255, 0), 2)
         pass
         #zoom image to rect
     if  len(faces)>=1 and w<=width and h <height:
@@ -80,6 +88,7 @@ while True:
 
     if cv2.waitKey(1) & 0xFF == ord('s'):
         frame_saver.append(frame)
+        cv2.imwrite(image_path+'test-'+str(count)+'.png',frame)
         print("frame saver")
 
 
@@ -89,10 +98,6 @@ cv2.destroyAllWindows()
 
 count=0
 for frame in frame_saver:
-	r = 1350.0 / frame.shape[1]
-	dim = (1350, int(frame.shape[0] * r))
-	frame = cv2.resize(frame, dim, interpolation = cv2.INTER_AREA)
-	cv2.imwrite(image_path+'test-'+str(count)+'.png',frame)
 	count+=1
 	cv2.imshow('image',frame)
 	cv2.waitKey(0)
