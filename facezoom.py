@@ -30,7 +30,7 @@ while True:
 
     gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
     
-    if cycle_counter%30==0:
+    if cycle_counter%5==0:
         faces = faceCascade.detectMultiScale(
             gray,
             scaleFactor=1.1,
