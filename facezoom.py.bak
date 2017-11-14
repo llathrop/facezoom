@@ -4,8 +4,10 @@ import sys
 image_path='./'
 frame_saver=[]
 
-cascPath = sys.argv[1]
-faceCascade = cv2.CascadeClassifier(cascPath)
+face_casc_path = 'haarcascades/haarcascade_frontalface_default.xml'
+faceCascade = cv2.CascadeClassifier(face_casc_path)
+eye_casc_path = 'haarcascades/haarcascade_eye.xml'
+eye_cascade= cv2.CascadeClassifier(eye_casc_path)
 
 try:
     video_capture = cv2.VideoCapture(0)
@@ -49,7 +51,19 @@ while True:
     # Draw a rectangle around the faces
     for (x, y, w, h) in faces:
         cv2.rectangle(frame, (x, y), (x+w, y+h), (0, 255, 0), 2)
-        pass
+        
+        eyes_detected = eye_cascade.detectMultiScale(gray[y:y+h,x:x+w])
+        #realign the detection to the original image
+        eyes=[]
+        for (eye_x,eye_y,eye_w,eye_h) in eyes_detected:
+            eyes.append((eye_x+x,eye_y+y,eye_w,eye_h))
+            
+        # Get the bounding box for each detected eye
+        for (eye_x,eye_y,eye_w,eye_h) in eyes:
+            # Add a green bounding box to the detections image
+            cv2.rectangle(frame, (eye_x,eye_y), (eye_x+eye_w,eye_y+eye_h), (255,0,0), 2)
+            print('eyes')
+        
         #zoom image to rect
     if  len(faces)>=1 and w<=width and h <height:
         use_x=(x+use_x*(zoom_rate-1))/zoom_rate
@@ -71,12 +85,11 @@ while True:
         if cycle_counter==0:
             face_detected_lastcycle=False
             cycle_counter=cycle_counter_length
-            
 
     frame=frame[use_y/zoom_factor:use_y+zoom_factor*use_h,use_x/zoom_factor:use_x+zoom_factor*use_w]
-    print(frame.shape[:2])
 
-        
+    #print(frame.shape[:2])
+    
     # Display the resulting frame
     r = 1700.0 / frame.shape[1]
     dim = (1700, int(frame.shape[0] * r))
